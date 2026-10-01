@@ -861,3 +861,15 @@ html.dark .crail-item { background: color-mix(in srgb, var(--g-dark, var(--strok
 .qn-tab:not(:hover):not(.on) .qn-tab-x { visibility: hidden; }
 .qn-tab-add { padding: 0 9px; color: var(--text); border: 1px solid var(--stroke-strong); border-bottom: 0; }
 .qn-tab-add:hover { color: var(--accent-text); }
+
+/* Settings as a dialog (2026-10-01): dimmed backdrop, big X; the menu bar stays above it. */
+.settings-backdrop { position: fixed; inset: calc(var(--title-h) + var(--menu-h)) 0 0 0; z-index: 900; display: grid; place-items: center; padding: 28px; background: rgba(0, 0, 0, 0.45); animation: fade 0.12s var(--ease); }
+.settings-dialog { position: relative; width: min(1040px, 100%); height: min(860px, 100%); display: flex; flex-direction: column; background: var(--bg-surface); border: 1px solid var(--stroke-strong); border-radius: 12px; box-shadow: 0 18px 60px rgba(0, 0, 0, 0.45); overflow: hidden; animation: pop 0.14s var(--ease); user-select: text; }
+.settings-head { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px 36px; border-bottom: 1px solid var(--stroke); background: var(--bg-surface); }
+.settings-head h1 { font-size: 26px; font-weight: 600; margin: 0; }
+.settings-x { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 10px; border: 1px solid var(--stroke-strong); color: var(--text); background: var(--bg-input); }
+.settings-x:hover { background: var(--close-hover, #c42b1c); border-color: transparent; color: #fff; }
+.settings-dialog .settings-inner { flex: 1 1 auto; overflow-y: auto; max-width: none; width: 100%; box-sizing: border-box; padding: 4px 36px 40px; }
+.settings-dialog h2 { font-size: 14px; font-weight: 600; margin: 24px 0 8px; }
+.menubar { z-index: 950; }
+@keyframes fade { from { opacity: 0; } }

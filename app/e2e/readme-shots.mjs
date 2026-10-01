@@ -176,7 +176,7 @@ await page.keyboard.press('Control+Alt+r');
 await page.locator('.menubar-btn', { hasText: 'Settings' }).click();
 await page.waitForTimeout(500);
 await page.locator('h2', { hasText: 'Read aloud' }).scrollIntoViewIfNeeded();
-await page.evaluate(() => document.querySelector('.settings-page')?.scrollBy(0, 120));
+await page.evaluate(() => document.querySelector('.settings-dialog .settings-inner')?.scrollBy(0, 120));
 await shot('21-read-aloud-settings');
 await page.keyboard.press('Escape');
 

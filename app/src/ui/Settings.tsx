@@ -3,7 +3,7 @@ import { useEffect, useState } from 'preact/hooks';
 import { settings, updateSettings, FONT_CHOICES, type Settings as S } from '../state/settings';
 import { settingsOpen, alertMsg, showToast } from '../state/ui';
 import { platform, FILE_TYPES, type IntegrationState } from '../platform';
-import { IcChevronLeft } from './icons';
+import { IcClose } from './icons';
 import { ScaleSlider } from './ScaleSlider';
 import { MarginControl } from './MarginControl';
 import { ReadAloudSettings } from './ReadAloud';
@@ -233,12 +233,17 @@ function Integration() {
 export function Settings() {
   const s = settings.value;
   return (
-    <div class="settings-page">
-      <div class="settings-inner">
-        <button class="back" onClick={() => (settingsOpen.value = false)}>
-          <IcChevronLeft /> Back
-        </button>
-        <h1>Settings</h1>
+    // A dialog over the app (click outside, the X or Esc closes it). The menu bar stays above it,
+    // so its menus still open on top.
+    <div class="settings-backdrop" onPointerDown={(e) => e.target === e.currentTarget && (settingsOpen.value = false)}>
+      <div class="settings-dialog" role="dialog" aria-modal="true" aria-label="Settings">
+        <div class="settings-head">
+          <h1>Settings</h1>
+          <button class="settings-x" title="Close (Esc)" aria-label="Close settings" onClick={() => (settingsOpen.value = false)}>
+            <IcClose size={22} />
+          </button>
+        </div>
+        <div class="settings-inner">
 
         <h2>Appearance</h2>
         <div class="card">
@@ -345,6 +350,7 @@ export function Settings() {
           <Row title="Notepad 2.0" desc="Version 0.1.0. Markdown by unified/remark (CommonMark and GitHub Flavored Markdown), editor by CodeMirror.">
             <span />
           </Row>
+        </div>
         </div>
       </div>
     </div>

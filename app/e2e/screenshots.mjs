@@ -119,7 +119,7 @@ await setup({ theme: 'dark', tabsMode: 'top' });
 await page.locator('.icon-btn[title=Settings]').click();
 await page.waitForTimeout(300);
 await page.locator('h2', { hasText: 'Windows integration' }).scrollIntoViewIfNeeded();
-await page.evaluate(() => document.querySelector('.settings-page').scrollBy(0, 200));
+await page.evaluate(() => document.querySelector('.settings-dialog .settings-inner').scrollBy(0, 200));
 await shot('11-settings-integration');
 await page.keyboard.press('Escape');
 
