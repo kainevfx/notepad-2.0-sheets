@@ -782,6 +782,21 @@ export async function saveDoc(id: string, opts: { silent?: boolean } = {}): Prom
   visualApi.flush();
   const d = docs.value[id];
   if (!d) return false;
+  const saver = binarySavers.get(id);
+  if (saver) {
+    try {
+      const mtime = await saver();
+      if (mtime == null) return false;
+      patchDoc(id, { mtime, dirty: false, savedAt: Date.now(), banner: null });
+      updateWindowTitle();
+      scheduleSession();
+      if (!opts.silent && d.path) showToast(`Saved ${basename(d.path)}`);
+      return true;
+    } catch (e) {
+      await alertMsg('Notepad 2.0', `Couldn't save ${d.path}\n\n${String(e)}`);
+      return false;
+    }
+  }
   if (isBinaryKind(d.viewer)) {
     if (!opts.silent) showToast('This file is shown read-only.');
     return false;
@@ -822,6 +837,41 @@ export async function saveDoc(id: string, opts: { silent?: boolean } = {}): Prom
     await alertMsg('Notepad 2.0', `Couldn't save ${cur.path}\n\n${String(e)}`);
     return false;
   }
+}
+
+/** Editable spreadsheets register how to write their workbook (returns the new mtime, or null). */
+export const binarySavers = new Map<string, () => Promise<number | null>>();
+
+/** The sheet editor's edits mark its tab unsaved (amber dot, asks before closing). */
+export function setBinaryDirty(id: string, dirty: boolean) {
+  const d = docs.value[id];
+  if (!d || d.dirty === dirty) return;
+  patchDoc(id, { dirty, modified: Date.now() });
+  updateWindowTitle();
+}
+
+/** Replace a text tab's whole text as one edit (the CSV grid writes its rows back this way). */
+export function replaceDocText(id: string, text: string) {
+  const d = docs.value[id];
+  if (!d || textOf(id) === text) return;
+  if (view && activeId.value === id) {
+    view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: text } });
+    return;
+  }
+  const st = states.get(id);
+  if (!st) return;
+  states.set(id, st.update({ changes: { from: 0, to: st.doc.length, insert: text } }).state);
+  onEdited(id);
+  editTick.value++;
+}
+
+/** "Create new: Sheet": a blank workbook in the save folder, opened in the sheet editor. */
+export async function newSheetFile(groupId?: string): Promise<string | null> {
+  const { blankXlsx } = await import('../sheet/xlsx-io');
+  const folder = await saveFolderPath();
+  const path = await freePath(folder, 'Untitled sheet.xlsx', null);
+  await platform.writeFile(path, await blankXlsx());
+  return openFiles([path], groupId ? { groupId } : {});
 }
 
 export async function saveDocAs(id: string): Promise<boolean> {
@@ -991,7 +1041,8 @@ export async function checkExternalChanges() {
         continue;
       }
       if (st.mtime > d.mtime + 1) {
-        if (isBinaryKind(d.viewer)) patchDoc(d.id, { mtime: st.mtime, size: st.size, rev: (d.rev ?? 0) + 1, banner: null });
+        if (isBinaryKind(d.viewer) && d.dirty) patchDoc(d.id, { banner: { kind: 'external', text: 'This workbook changed on disk. Reload loses your unsaved edits; Keep mine saves over it on the next save.' } });
+        else if (isBinaryKind(d.viewer)) patchDoc(d.id, { mtime: st.mtime, size: st.size, rev: (d.rev ?? 0) + 1, banner: null });
         else if (!d.dirty) await reloadDoc(d.id, true);
         else patchDoc(d.id, { banner: { kind: 'external', text: 'This file changed on disk.' } });
       }
@@ -1007,7 +1058,8 @@ export async function reloadDoc(id: string, silent = false) {
   if (!d?.path) return;
   if (isBinaryKind(d.viewer)) {
     const s = await platform.stat(d.path);
-    patchDoc(id, { mtime: s.mtime, size: s.size, rev: (d.rev ?? 0) + 1, banner: null });
+    patchDoc(id, { mtime: s.mtime, size: s.size, rev: (d.rev ?? 0) + 1, banner: null, dirty: false });
+    updateWindowTitle();
     return;
   }
   const f = await platform.readFile(d.path);

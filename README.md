@@ -63,9 +63,10 @@ Tabs, File / Edit / View menus, Find and Replace, Go to line, Print, Date/time w
 
 - **Groups** are coloured containers for related files. Groups can sit inside groups. Click a group to fold it away.
 - **Four layouts** (the **Tabs** menu, top right): tabs along the top (joined to the page), a resizable **sidebar** on the left, a slim **rail**, or the **compact** rail with each group's name running vertically.
-- The sidebar has **Search** at the top with **Sort** under it, and **New text file · New MD file · New group · Paper** below.
+- The sidebar has **Search** at the top, the **Manual sorting** dropdown and **Paper** under it, and **Create new: Markdown | Text | Sheet**. **+ New group** sits at the end of the list, **TrayNotes** at the bottom, and **Collapse sidebar** in the footer.
+- **Select several files** with Ctrl+click or Shift+click; drag them together, or right-click → **Add to new group**, Move, Colour, Save, Close.
 - Menus, toolbars, tabs and the sidebar are a shade darker than the page, so the document stands out. **Settings** sits in the menu bar: File · Edit · Insert · View · Settings · Help.
-- Every tab shows its type (**TXT**, **MD**, **CSV**, **XLSX**, **PDF**…) at the end of the title, and when you last edited it. Right-click → **Colour** tints one tab.
+- Under every file name: its type and when it was created (`.md file · created yesterday 22:09`), and on the right **Saved 19:38 ●** (green) or **Unsaved ●** (amber). Right-click → **Colour** tints one tab.
 - **Sort** the sidebar by Manual, Date modified, Date created, Name A–Z or File type. Sorting is a view: your own order is kept.
 - **Rename in place:** double-click, F2 or right-click → Rename. Saved files are renamed on disk and never over an existing file.
 - **Duplicate, Copy and Paste** files into another group. Copies are named `Name (2).ext`, and nothing is ever overwritten.
@@ -170,7 +171,7 @@ Two voices, chosen in **Settings → Read aloud → Voice engine**:
 
 ### Saving: nothing is ever lost
 
-- Untitled notes and TrayNotes **autosave continuously**.
+- Untitled notes and TrayNotes **autosave continuously**, as real files in your **save folder** (Settings → Saving; `Documents\Notepad 2.0` to start), named after their first line.
 - Opened files work like Notepad: you save with **Ctrl+S**. But unsaved edits survive a crash, a reboot or a power cut, and come back with a banner.
 - Autosave for opened files can be switched on in Settings, globally or per group.
 
@@ -194,8 +195,9 @@ Open a file (Ctrl+O, drag it in, or from a link) and Notepad 2.0 picks the right
 
 | Files | Shown as | Edit the text? |
 |---|---|---|
-| CSV, TSV | A grid with a sticky header row; click a column to sort | Yes (Source) |
-| XLSX, XLS, ODS | A grid per sheet, sheet tabs along the bottom; values as Excel shows them. **File → Save sheet as CSV…** | No (read-only) |
+| XLSX | The **sheet editor** (below): edit, format, freeze, sort, filter, save back into the .xlsx | Yes |
+| CSV, TSV | The sheet editor's grid (formatting off: CSV stores text only), with Source next to it | Yes (grid and Source) |
+| XLS, ODS | A grid per sheet, sheet tabs along the bottom; values as Excel shows them. **File → Save sheet as CSV…** | No (read-only) |
 | JSON, YAML, XML | A collapsible tree with item counts, Expand all / Collapse all. A file with a mistake opens next to its source with the error line | Yes (Source) |
 | TOML, INI, CFG, logs | Highlighted text; in logs ERROR lines are red and WARN amber | Yes |
 | HTML | The page rendered with its own styling. Scripts never run; links work like links in your notes | Yes (Source) |
@@ -216,6 +218,22 @@ Read-only files are never autosaved or changed, and they refresh when the file c
 ![A Word document shown as formatted text](docs/screenshots/16-word-document.png)
 
 ---
+
+### The sheet editor (.xlsx and CSV)
+
+- **Create new → Sheet** makes a blank workbook in your save folder. Any .xlsx you open is editable.
+- **Edit** by typing, double-click or F2; Enter / Tab move on, Alt+Enter adds a line, Esc cancels. Status-style dropdowns in the file show as a dropdown. Copy and paste to and from Excel. Undo / redo (Ctrl+Z / Ctrl+Y) for everything.
+- **Formatting bar:** font, size, bold, italic, underline, strikethrough, text colour, fill colour, left / centre / right, top / middle / bottom, wrap, clear formatting.
+- **Sheet tools bar:** filter box, Sort, Freeze, Fit, Wrap (whole sheet), Alternating colours, Insert / delete, the file's colours (Original / Adapted / None), Find and replace.
+- **Freeze** any rows (they stay at the top) and columns to the **left or the right** (right-click a row or column header, or the Freeze menu). Frozen areas have a solid accent edge and a faint tint. The top-rows / left-columns part is saved into the .xlsx; the rest is remembered by Notepad 2.0.
+- **Resize** by dragging header dividers; double-click a divider (or right-click → Fit to data) to fit.
+- **Sort** from a column header's right-click menu, or Sort → Custom sort with up to three levels. Rows above the **header row** never move (found automatically; right-click a row → Use as header row).
+- **Filter:** type in the filter box; suggestions show headings and values (`Phase: 4`). Enter adds a filter; filters combine. The status shows "214 of 968 rows".
+- **Move rows or columns:** select them, then drag their header.
+- **Alternating colours:** select a range → Alternating colours… → pick odd and even. Saved as an Excel rule, so it stays in order when you sort or add rows. Pairs you used are offered again.
+- **Dark theme:** the file's colours are shown adapted (same hue, lightness flipped) so a pale workbook doesn't glare; the file keeps its real colours. Colours you pick are shown as picked.
+- **Long cells:** hover to read; right-click → Copy cell text or View full text.
+- **Saving:** Ctrl+S writes the .xlsx (a `.bak` copy of the original is kept first, once per session). Formulas are kept; Excel recalculates them when it opens the file.
 
 ## Keyboard shortcuts
 

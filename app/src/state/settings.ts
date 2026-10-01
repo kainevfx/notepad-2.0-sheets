@@ -71,6 +71,8 @@ export interface Settings {
   notesCopiedToFolder: boolean;
   /** Version of the file-type icons last written to Windows (re-registered once when it changes). */
   fileIconsVersion: number;
+  /** How a spreadsheet's own colours show: adapted to the dark theme, as in the file, or not at all. */
+  sheetColours: 'adapted' | 'original' | 'none';
 
   quickNoteSize: 'eighth' | 'quarter';
   quickNoteHideOnBlur: boolean;
@@ -117,6 +119,7 @@ export const DEFAULT_SETTINGS: Settings = {
   saveFolder: '',
   notesCopiedToFolder: false,
   fileIconsVersion: 0,
+  sheetColours: 'adapted',
 
   quickNoteSize: 'eighth',
   quickNoteHideOnBlur: true,

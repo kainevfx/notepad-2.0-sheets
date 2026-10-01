@@ -90,3 +90,10 @@ export function toCsv(rows: string[][]): string {
   const cell = (v: string) => (/[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
   return rows.map((r) => r.map(cell).join(',')).join('\r\n') + '\r\n';
 }
+
+/** Rows back to text with the file's own delimiter (comma, semicolon or tab). */
+export function toDelimited(rows: string[][], delim: string): string {
+  const q = new RegExp(`["\\r\\n${delim === '\t' ? '\\t' : delim}]`);
+  const cell = (v: string) => (q.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+  return rows.map((r) => r.map(cell).join(delim)).join('\r\n') + (rows.length ? '\r\n' : '');
+}

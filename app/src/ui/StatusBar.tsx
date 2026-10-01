@@ -53,7 +53,7 @@ export function StatusBar() {
   if (d && isBinaryKind(d.viewer))
     return (
       <footer class="statusbar">
-        <span class="sb-item">{fileBadge(d).label} · read-only</span>
+        <span class="sb-item">{fileBadge(d).label} · {d.path && /\.xlsx$/i.test(d.path) ? (d.dirty ? 'unsaved changes (Ctrl+S saves)' : 'saved') : 'read-only'}</span>
         <span class="sb-item">{formatBytes(d.size)}</span>
         <span class="sb-flex" />
         <span class="sb-item sb-scale">

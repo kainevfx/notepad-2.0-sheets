@@ -2,7 +2,7 @@ import { useEffect, useState } from 'preact/hooks';
 import type { MenuItem } from '../state/ui';
 import { settingsOpen, paperPopoverOpen, closedNotesOpen, openContextMenu } from '../state/ui';
 import { settings, updateSettings, isDark } from '../state/settings';
-import {
+import { newSheetFile,
   activeDoc, activeId, newNote, openWithDialog, saveDoc, saveDocAs, saveAll, closeDoc, cmd, recentFiles, openFiles, hideToTray,
   quitApp, setLanguage, cycleMdView, effectivePaper, refreshView, newGroupFrom, closedNotes, setPaper, saveSheetCsv, panes, toggleSplit, activeView, setPaneView,
 } from '../state/app';
@@ -27,6 +27,7 @@ function fileMenu(): MenuItem[] {
   return [
     { label: 'New text file', shortcut: 'Ctrl+N', action: () => newNote({ language: 'plain' }) },
     { label: 'New Markdown file', shortcut: 'Ctrl+Alt+N', action: () => newNote({ language: 'markdown' }) },
+    { label: 'New sheet', action: () => void newSheetFile() },
     { label: 'New TrayNote', shortcut: 'Win+Alt+N', action: () => platform.showQuickNote() },
     { label: 'Open', shortcut: 'Ctrl+O', action: () => openWithDialog() },
     {

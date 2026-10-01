@@ -1,0 +1,119 @@
+/* ---------- sheet editor ---------- */
+.sh { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; position: relative; outline: none; background: var(--bg-editor);
+  --sh-grid: color-mix(in srgb, var(--text) 13%, transparent);
+  --sh-head: var(--bg-chrome);
+  --sh-head-on: color-mix(in srgb, var(--accent) 22%, var(--bg-chrome));
+  --sh-sel: color-mix(in srgb, var(--accent) 16%, transparent);
+  --sh-fz: color-mix(in srgb, var(--accent) 7%, transparent);
+  --sh-edge: var(--accent);
+}
+.sh-fmt { justify-content: flex-start; flex: 0 0 auto; }
+.sh-note { margin-left: 10px; font-size: 12px; color: var(--text-3); }
+.sh-tools { flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 4px 8px; border-bottom: 1px solid var(--stroke); background: var(--bg-chrome); }
+.sh-tbtn { display: inline-flex; align-items: center; gap: 5px; height: 28px; min-width: 28px; justify-content: center; padding: 0 8px; border: 1px solid var(--stroke-strong); border-radius: 6px; background: var(--bg-input); font-size: 12px; color: var(--text); white-space: nowrap; }
+.sh-tbtn:hover:not(:disabled) { background: var(--bg-hover); border-color: var(--text-3); }
+.sh-tbtn.on { background: var(--bg-press); }
+.sh-tbtn:disabled { opacity: 0.4; }
+.sh-drop { gap: 4px; }
+.sh-pop-anchor { position: relative; }
+.sh-menu { min-width: 260px; }
+.sh-menu-note { font-size: 11.5px; color: var(--text-3); padding: 6px 10px 2px; max-width: 280px; }
+.sh-status { margin-left: auto; font-size: 12px; color: var(--text-2); white-space: nowrap; padding: 0 6px; font-variant-numeric: tabular-nums; }
+.sh-colours { margin: 0 2px; }
+.sh-colours button.on { background: var(--bg-card); color: var(--text); box-shadow: 0 0 0 1px var(--stroke-strong); }
+
+/* Filter box: chips + a text field; suggestions in a small list (not buttons) */
+.sh-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; min-width: 260px; max-width: 560px; flex: 1 1 280px; min-height: 28px; padding: 2px 6px; border: 1px solid var(--stroke-strong); border-radius: 6px; background: var(--bg-input); color: var(--text-2); }
+.sh-filter:focus-within { border-color: var(--accent); }
+.sh-filter input { flex: 1; min-width: 120px; border: 0; outline: 0; background: transparent; font-size: 12.5px; color: var(--text); height: 22px; }
+.sh-chip { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 2px 0 8px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--text); font-size: 12px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+.sh-chip button { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 8px; color: var(--text-2); }
+.sh-chip button:hover { background: var(--bg-press); color: var(--text); }
+.sh-sug { position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 70; padding: 4px; border-radius: 8px; background: var(--bg-card); border: 1px solid var(--stroke); box-shadow: var(--shadow); }
+.sh-sug-item { padding: 5px 8px; border-radius: 4px; font-size: 12.5px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default; }
+.sh-sug-item.on, .sh-sug-item:hover { background: var(--bg-hover); }
+.sh-sug-hint { padding: 4px 8px 2px; font-size: 11px; color: var(--text-3); }
+
+.sh-find { flex: 0 0 auto; display: flex; align-items: center; gap: 6px; padding: 4px 8px; border-bottom: 1px solid var(--stroke); background: var(--bg-chrome); }
+.sh-find input { height: 26px; width: 200px; padding: 0 8px; border: 1px solid var(--stroke-strong); border-radius: 6px; background: var(--bg-input); color: var(--text); font-size: 12.5px; outline: none; }
+.sh-find input:focus { border-color: var(--accent); }
+.sh-find-count { font-size: 12px; color: var(--text-3); min-width: 54px; }
+
+/* Grid: six panes around one scroller */
+.sh-grid { flex: 1 1 auto; min-height: 0; position: relative; display: grid; overflow: hidden; user-select: none;
+  grid-template-columns: calc(var(--rowhdr) + var(--left)) minmax(0, 1fr) var(--right);
+  grid-template-rows: calc(var(--colhdr) + var(--top)) minmax(0, 1fr);
+  font-size: 13px; color: var(--text);
+}
+.sh-pane { position: relative; overflow: hidden; min-width: 0; min-height: 0; }
+.sh-mm { overflow: auto; }
+.sh-mm::-webkit-scrollbar { width: 12px; height: 12px; }
+.sh-mm::-webkit-scrollbar-thumb { background: var(--stroke-strong); border-radius: 6px; border: 3px solid var(--bg-editor); }
+.sh-mm::-webkit-scrollbar-corner { background: var(--bg-editor); }
+.sh-size { position: absolute; left: 0; top: 0; pointer-events: none; }
+.sh-layer { position: absolute; left: 0; top: 0; }
+.sh-tl, .sh-tm, .sh-tr { background: var(--sh-head); }
+.sh-tl { grid-column: 1; grid-row: 1; }
+.sh-tm { grid-column: 2; grid-row: 1; }
+.sh-tr { grid-column: 3; grid-row: 1; }
+.sh-ml { grid-column: 1; grid-row: 2; }
+.sh-mm { grid-column: 2; grid-row: 2; }
+.sh-mr { grid-column: 3; grid-row: 2; }
+/* Frozen edges: a solid accent line (never dashed) where frozen meets scrolling */
+.sh-grid.has-top .sh-tl, .sh-grid.has-top .sh-tm, .sh-grid.has-top .sh-tr { box-shadow: inset 0 -2px 0 var(--sh-edge); z-index: 2; }
+.sh-grid.has-left .sh-ml { box-shadow: inset -2px 0 0 var(--sh-edge); z-index: 2; }
+.sh-grid.has-left .sh-tl { box-shadow: inset -2px 0 0 var(--sh-edge); }
+.sh-grid.has-left.has-top .sh-tl { box-shadow: inset -2px 0 0 var(--sh-edge), inset 0 -2px 0 var(--sh-edge); }
+.sh-grid.has-right .sh-mr, .sh-grid.has-right .sh-tr { box-shadow: inset 2px 0 0 var(--sh-edge); z-index: 2; }
+.sh-grid.has-right.has-top .sh-tr { box-shadow: inset 2px 0 0 var(--sh-edge), inset 0 -2px 0 var(--sh-edge); }
+.sh-ml, .sh-mr { background: var(--bg-editor); }
+
+.sh-corner { position: absolute; left: 0; top: 0; width: var(--rowhdr); height: var(--colhdr); border-right: 1px solid var(--sh-grid); border-bottom: 1px solid var(--sh-grid); background: var(--sh-head); }
+.sh-corner::after { content: ''; position: absolute; right: 4px; bottom: 4px; border: 5px solid transparent; border-right-color: var(--text-3); border-bottom-color: var(--text-3); }
+.sh-ch, .sh-rh { position: absolute; display: flex; align-items: center; justify-content: center; font: 11.5px var(--ui-font); color: var(--text-2); background: var(--sh-head); border-right: 1px solid var(--sh-grid); border-bottom: 1px solid var(--sh-grid); box-sizing: border-box; cursor: default; }
+.sh-ch { top: 0; height: var(--colhdr); }
+.sh-rh { left: 0; width: var(--rowhdr); font-variant-numeric: tabular-nums; }
+.sh-ch.on, .sh-rh.on { background: var(--sh-head-on); color: var(--text); font-weight: 600; }
+.sh-ch.fz, .sh-rh.fz { background: color-mix(in srgb, var(--accent) 12%, var(--sh-head)); }
+.sh-rh.hdr { box-shadow: inset 3px 0 0 var(--accent); color: var(--text); font-weight: 600; }
+.sh-ch.mv-before { box-shadow: inset 3px 0 0 var(--accent); }
+.sh-ch.mv-after { box-shadow: inset -3px 0 0 var(--accent); }
+.sh-rh.mv-before { box-shadow: inset 0 3px 0 var(--accent); }
+.sh-rh.mv-after { box-shadow: inset 0 -3px 0 var(--accent); }
+.sh-rz-c { position: absolute; right: -3px; top: 0; bottom: 0; width: 7px; cursor: col-resize; z-index: 3; }
+.sh-rz-r { position: absolute; left: 0; right: 0; bottom: -3px; height: 7px; cursor: row-resize; z-index: 3; }
+.sh-rz-c:hover, .sh-rz-r:hover { background: color-mix(in srgb, var(--accent) 50%, transparent); }
+
+/* Cells */
+.sc { position: absolute; box-sizing: border-box; display: flex; flex-direction: column; padding: 2px 5px; border-right: 1px solid var(--sh-grid); border-bottom: 1px solid var(--sh-grid); overflow: hidden; line-height: 1.3; }
+.sct { display: block; white-space: pre; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.sc.wrap .sct { white-space: pre-wrap; overflow-wrap: anywhere; text-overflow: clip; }
+.sc.fz::before { content: ''; position: absolute; inset: 0; background: var(--sh-fz); pointer-events: none; }
+.sc.sel::after { content: ''; position: absolute; inset: 0; background: var(--sh-sel); pointer-events: none; }
+.sc.act { box-shadow: inset 0 0 0 2px var(--accent); z-index: 1; }
+.sc.hit .sct { background: color-mix(in srgb, #f9ab00 40%, transparent); border-radius: 2px; }
+
+/* Editing */
+.sh-editor, .sh-dd { position: absolute; z-index: 30; box-sizing: border-box; border: 2px solid var(--accent); border-radius: 2px; background: var(--bg-input); color: var(--text); outline: none; box-shadow: var(--shadow); }
+.sh-editor { padding: 2px 5px; resize: none; line-height: 1.3; max-height: 320px; overflow: auto; }
+.sh-dd { height: 28px; font-size: 13px; padding: 0 6px; }
+
+/* Dialogs */
+.sh-modal { width: 520px; }
+.sh-modal-body { padding: 4px 24px 0; font-size: 13.5px; display: flex; flex-direction: column; gap: 10px; }
+.sh-modal-buttons { margin: 14px -24px 0; align-items: center; }
+.sh-band-pick { display: flex; gap: 20px; }
+.sh-band-pick label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.sh-band-pick input { width: 44px; height: 28px; border: 1px solid var(--stroke-strong); border-radius: 6px; background: none; padding: 2px; }
+.sh-pairs { display: flex; flex-wrap: wrap; gap: 6px; }
+.sh-pair { display: flex; flex-direction: column; width: 36px; height: 28px; border-radius: 6px; overflow: hidden; border: 1px solid var(--stroke-strong); padding: 0; }
+.sh-pair span { flex: 1; }
+.sh-pair:hover { outline: 2px solid var(--accent); }
+.sh-sort-row { display: flex; align-items: center; gap: 8px; }
+.sh-sort-row > span { width: 56px; font-size: 13px; color: var(--text-2); }
+.sh-sort-row .select { flex: 1; min-width: 0; }
+.sh-fulltext { width: 100%; height: 260px; resize: vertical; box-sizing: border-box; padding: 10px; border: 1px solid var(--stroke-strong); border-radius: 6px; background: var(--bg-input); color: var(--text); font: 13px/1.5 var(--ui-font); }
+.viewer-sheet, .viewer-table { display: flex; flex-direction: column; }
+/* The frozen-row band (scrolls on its own when it's taller than 60% of the grid) */
+.sh-band { position: absolute; left: 0; right: 0; top: var(--colhdr); overflow: hidden; }
+.sh-pane .sh-ch { z-index: 1; }

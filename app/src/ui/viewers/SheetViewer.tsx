@@ -7,11 +7,18 @@ import { platform } from '../../platform';
 import { sheetExport } from '../../state/app';
 import { Grid } from './Grid';
 import { Notice } from './Notice';
+import { SheetEditor } from '../sheet/SheetEditor';
 
 /** The sheet each open workbook was showing, so switching tabs keeps it. */
 const activeSheet = new Map<string, number>();
 
-export function SheetViewer({ doc }: ViewerProps) {
+/** .xlsx opens in the sheet editor; .xls and .ods stay read-only (shown from calamine). */
+export function SheetViewer(props: ViewerProps) {
+  if (props.doc.path && /\.xlsx$/i.test(props.doc.path)) return <SheetEditor doc={props.doc} text="" mode="xlsx" fallback={<ReadOnlySheet {...props} />} />;
+  return <ReadOnlySheet {...props} />;
+}
+
+function ReadOnlySheet({ doc }: ViewerProps) {
   const [wb, setWb] = useState<Workbook | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [idx, setIdx] = useState(() => activeSheet.get(doc.id) ?? 0);

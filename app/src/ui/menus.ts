@@ -3,7 +3,7 @@ import { renamingId, railPeek } from '../state/ui';
 import * as T from '../lib/tree-ops';
 import {
   docs, tree, closeDoc, closeOthers, newGroupFrom, setGroupColor, collapseAllInside, ungroup, closeGroup,
-  setGroupAutosave, moveNode, moveNodeToRoot, newNote, activate, saveDoc, saveDocAs, QUICK_GROUP_ID, setDocColor, duplicateDoc, copyDoc, pasteInto, docClipboard,
+  setGroupAutosave, moveNode, moveNodeToRoot, newNote, newSheetFile, activate, saveDoc, saveDocAs, QUICK_GROUP_ID, setDocColor, duplicateDoc, copyDoc, pasteInto, docClipboard,
 } from '../state/app';
 import { platform } from '../platform';
 import { settings } from '../state/settings';
@@ -132,6 +132,7 @@ export function ungroupedMenu(): MenuItem[] {
     { separator: true },
     { label: 'New Markdown file', action: () => newNote({ language: 'markdown', groupId: null }) },
     { label: 'New text file', action: () => newNote({ language: 'plain', groupId: null }) },
+    { label: 'New sheet', action: () => void newSheetFile() },
     { label: 'New group', shortcut: 'Ctrl+Shift+G', action: () => newGroupFrom([], null) },
   ];
 }
@@ -148,6 +149,7 @@ export function groupMenu(id: string): MenuItem[] {
     { separator: true },
     { label: 'New Markdown file here', action: () => activate(newNote({ groupId: id, language: 'markdown' })) },
     { label: 'New text file here', action: () => activate(newNote({ groupId: id, language: 'plain' })) },
+    { label: 'New sheet here', action: () => void newSheetFile(id) },
     ...(system
       ? []
       : [

@@ -1,10 +1,8 @@
-// CSV / TSV shown as a grid (the Source view edits the text).
-import { useMemo } from 'preact/hooks';
+// CSV / TSV in the sheet editor's grid: edit, sort, filter, freeze, resize and move rows and
+// columns (the Source view edits the same text; formatting is off because CSV can't store it).
 import type { ViewerProps } from '../ViewerPane';
-import { parseCsv, detectDelimiter } from '../../lib/csv';
-import { Grid } from './Grid';
+import { SheetEditor } from '../sheet/SheetEditor';
 
 export function TableViewer({ doc, text }: ViewerProps) {
-  const { rows, truncated } = useMemo(() => parseCsv(text, detectDelimiter(text, doc.path)), [text, doc.path]);
-  return <Grid rows={rows} truncated={truncated} />;
+  return <SheetEditor doc={doc} text={text} mode="csv" />;
 }

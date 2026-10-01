@@ -2,7 +2,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { signal } from '@preact/signals';
 import type { TreeNode, GroupNode } from '../lib/tree-ops';
-import { tree, docs, activeId, activate, closeDoc, newNote, displayTitle, toggleGroup, newGroupFrom, renameDoc, renameGroupTo, panes, saveState, QUICK_GROUP_ID } from '../state/app';
+import { tree, docs, activeId, activate, closeDoc, newNote, newSheetFile, displayTitle, toggleGroup, newGroupFrom, renameDoc, renameGroupTo, panes, saveState, QUICK_GROUP_ID } from '../state/app';
 import { settings, updateSettings } from '../state/settings';
 import { PaperButton } from './PaperButton';
 import { openContextMenu, railPeek, closedNotesOpen, renamingId, contextMenu, type MenuItem } from '../state/ui';
@@ -218,7 +218,7 @@ function CreateNew({ onMeasure }: { onMeasure: (w: number) => void }) {
         Text
       </button>
       <span class="cn-sep" />
-      <button class="cn-part" disabled title="New spreadsheet: arrives with the sheet editor">
+      <button class="cn-part" title="New spreadsheet (.xlsx), saved in your save folder" onClick={() => void newSheetFile()}>
         Sheet
       </button>
     </div>

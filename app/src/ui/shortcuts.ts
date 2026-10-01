@@ -21,6 +21,9 @@ export function installShortcuts() {
       fn();
     };
 
+    // The sheet editor handles its own editing keys (undo, find, copy, bold…, F2 edits a cell).
+    const inSheet = !!(e.target as HTMLElement | null)?.closest?.('.sh');
+    if (inSheet && (e.key === 'F2' || e.key === 'F3' || (mod && !e.altKey && !e.shiftKey && 'zyafhbiucxv'.includes(k) && k.length === 1) || (mod && e.shiftKey && k === 'z'))) return;
     if (e.key === 'F5' && !mod) return run(cmd.timeDate);
     if (e.key === 'F3') return run(() => cmd.findNext(e.shiftKey));
     if (e.key === 'F2' && !mod && id && !(e.target as HTMLElement | null)?.closest?.('input, textarea')) return run(() => startRename(id));
